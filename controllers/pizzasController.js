@@ -14,41 +14,105 @@ function index(req, res) {
     filteredPizzas = filteredPizzas.filter((pizza) => pizza.name.toLowerCase() === name.toLowerCase());
   }
 
+  filteredPizzas = filteredPizzas.map((pizza) => ({ ...pizza, image: '/images/pizzas/' + pizza.image }));
+
   res.json(filteredPizzas);
 }
 
 // # show
 function show(req, res) {
-  // logica
+  // * trovo la pizza
   const id = parseInt(req.params.id);
-  const pizza = pizzasData.find((pizza) => pizza.id === id);
+  let pizza = pizzasData.find((pizza) => pizza.id === id);
 
-  // cntrollo err
+  // * controllo errore
   if (!pizza) {
     return res.status(404).json({
       error: 'Not found',
     });
   }
 
-  // risposta pos
+  pizza = { ...pizza, image: '/images/pizzas/' + pizza.image };
+
+  // * risposta
   res.json(pizza);
 }
 
 // # store
 function store(req, res) {
-  res.json('Creazione di una pizza');
+  const { name, image, ingredients } = req.body;
+  const id = pizzasData.at(-1).id + 1;
+
+  if (!name || !image || !ingredients?.length) {
+    return res.status(400).json({ error: 'Invalid params' });
+  }
+
+  const newPizza = { id, name, image, ingredients };
+
+  pizzasData.push(newPizza);
+
+  res.json(newPizza);
 }
 
 // # update
 function update(req, res) {
+  // * trovo la pizza da modificare
   const id = parseInt(req.params.id);
-  res.json('Sostituisco la pizza ' + id);
+
+  let pizza = pizzasData.find((pizza) => pizza.id === id);
+
+  // * controllo errore
+  if (!pizza) {
+    return res.status(404).json({
+      error: 'Not found',
+    });
+  }
+
+  // * recupero i nuovi parametri
+  const { name, image, ingredients } = req.body;
+
+  if (!name || !image || !ingredients?.length) {
+    return res.status(400).json({ error: 'Invalid params' });
+  }
+
+  // * aggiorno la pizza
+  pizza.name = name;
+  pizza.image = image;
+  pizza.ingredients = ingredients;
+
+  res.json(pizza);
 }
 
 // # modify
 function modify(req, res) {
+  // * trovo la pizza da modificare
   const id = parseInt(req.params.id);
-  res.json('Modifico la pizza ' + id);
+
+  let pizza = pizzasData.find((pizza) => pizza.id === id);
+
+  // * controllo errore
+  if (!pizza) {
+    return res.status(404).json({
+      error: 'Not found',
+    });
+  }
+
+  // * recupero i nuovi parametri
+  const { name, image, ingredients } = req.body;
+
+  if (name) {
+    pizza.name = name;
+  }
+
+  if (image) {
+    pizza.image = image;
+  }
+
+  if (ingredients?.length) {
+    pizza.ingredients = ingredients;
+  }
+
+  res.json(pizza);
 }
 
 // # destroy
