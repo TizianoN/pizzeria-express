@@ -1,7 +1,7 @@
 // # CONFIG ENVIRONMENT VARIABLES
 require('dotenv').config();
 
-// # CONFIG EXPRESS
+// ### CONFIG EXPRESS
 
 // * INIT EXPRESS
 const express = require('express');
