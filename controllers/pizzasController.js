@@ -27,9 +27,9 @@ function show(req, res) {
 
   // * controllo errore
   if (!pizza) {
-    return res.status(404).json({
-      error: 'Not found',
-    });
+    const err = new Error('Id pizza not found');
+    err.code = 404;
+    throw err;
   }
 
   pizza = { ...pizza, image: '/images/pizzas/' + pizza.image };
@@ -44,7 +44,9 @@ function store(req, res) {
   const id = pizzasData.at(-1).id + 1;
 
   if (!name || !image || !ingredients?.length) {
-    return res.status(400).json({ error: 'Invalid params' });
+    const err = new Error('Invalid params');
+    err.code = 400;
+    throw err;
   }
 
   const newPizza = { id, name, image, ingredients };
@@ -63,16 +65,18 @@ function update(req, res) {
 
   // * controllo errore
   if (!pizza) {
-    return res.status(404).json({
-      error: 'Not found',
-    });
+    const err = new Error('Id pizza not found');
+    err.code = 404;
+    throw err;
   }
 
   // * recupero i nuovi parametri
   const { name, image, ingredients } = req.body;
 
   if (!name || !image || !ingredients?.length) {
-    return res.status(400).json({ error: 'Invalid params' });
+    const err = new Error('Invalid params');
+    err.code = 400;
+    throw err;
   }
 
   // * aggiorno la pizza
@@ -92,9 +96,9 @@ function modify(req, res) {
 
   // * controllo errore
   if (!pizza) {
-    return res.status(404).json({
-      error: 'Not found',
-    });
+    const err = new Error('Id pizza not found');
+    err.code = 404;
+    throw err;
   }
 
   // * recupero i nuovi parametri
@@ -122,9 +126,9 @@ function destroy(req, res) {
   const pizza = pizzasData.find((pizza) => pizza.id === id);
 
   if (!pizza) {
-    return res.status(404).json({
-      error: 'Not found',
-    });
+    const err = new Error('Id pizza not found');
+    err.code = 404;
+    throw err;
   }
 
   const pizzaIndex = pizzasData.indexOf(pizza);
