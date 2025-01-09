@@ -14,9 +14,7 @@ function index(req, res) {
     filteredPizzas = filteredPizzas.filter((pizza) => pizza.name.toLowerCase() === name.toLowerCase());
   }
 
-  filteredPizzas = filteredPizzas.map((pizza) => ({ ...pizza, image: '/images/pizzas/' + pizza.image }));
-
-  res.json(filteredPizzas);
+  res.json(normalizePizzasArray(filteredPizzas));
 }
 
 // # show
@@ -40,8 +38,10 @@ function show(req, res) {
 
 // # store
 function store(req, res) {
-  const { name, image, ingredients } = req.body;
+  const { name, image, ingredients, description, available } = req.body;
   const id = pizzasData.at(-1).id + 1;
+
+  console.log(req.body);
 
   if (!name || !image || !ingredients?.length) {
     const err = new Error('Invalid params');
@@ -49,7 +49,7 @@ function store(req, res) {
     throw err;
   }
 
-  const newPizza = { id, name, image, ingredients };
+  const newPizza = { id, name, image, ingredients, description, available };
 
   pizzasData.push(newPizza);
 
@@ -71,7 +71,7 @@ function update(req, res) {
   }
 
   // * recupero i nuovi parametri
-  const { name, image, ingredients } = req.body;
+  const { name, image, ingredients, description, available } = req.body;
 
   if (!name || !image || !ingredients?.length) {
     const err = new Error('Invalid params');
@@ -83,6 +83,8 @@ function update(req, res) {
   pizza.name = name;
   pizza.image = image;
   pizza.ingredients = ingredients;
+  pizza.description = description;
+  pizza.available = available;
 
   res.json(pizza);
 }
@@ -102,7 +104,7 @@ function modify(req, res) {
   }
 
   // * recupero i nuovi parametri
-  const { name, image, ingredients } = req.body;
+  const { name, image, ingredients, description, available } = req.body;
 
   if (name) {
     pizza.name = name;
@@ -114,6 +116,14 @@ function modify(req, res) {
 
   if (ingredients?.length) {
     pizza.ingredients = ingredients;
+  }
+
+  if (description) {
+    pizza.description = description;
+  }
+
+  if (available) {
+    pizza.available = available;
   }
 
   res.json(pizza);
@@ -135,7 +145,10 @@ function destroy(req, res) {
 
   pizzasData.splice(pizzaIndex, 1);
 
-  res.json(pizzasData);
+  // res.json(normalizePizzasArray(pizzasData));
+  res.sendStatus(204);
 }
+
+const normalizePizzasArray = (pizzas) => pizzas.map((pizza) => ({ ...pizza, image: '/images/pizzas/' + pizza.image }));
 
 module.exports = { index, show, store, update, modify, destroy };
